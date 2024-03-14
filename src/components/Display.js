@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 
 function Display() {
-    const [activePad, setActivePad] = useState(null);
+    const [activeDrumPad, setActiveDrumPad] = useState('')
+
     const drumData = [
         {id: "heater-1", key: "Q", src: "https://s3.amazonaws.com/freecodecamp/drums/Heater-1.mp3", label: "Q"},
         {id: "heater-2", key: "W", src: "https://s3.amazonaws.com/freecodecamp/drums/Heater-2.mp3", label: "W"},
@@ -13,22 +14,30 @@ function Display() {
         {id: "kick", key: "X", src: "https://s3.amazonaws.com/freecodecamp/drums/RP4_KICK_1.mp3", label: "X"},
         {id: "close-hh", key: "C", src: "https://s3.amazonaws.com/freecodecamp/drums/Cev_H2.mp3", label: "C"},
     ];
+
     useEffect(() => {
         const playAudio = (val) => {
             // Play audio corresponding to the clicked pad or pressed key
             const audio = document.getElementById(val);
             if (audio) {
                 audio.currentTime = 0; // Reset audio to start
-                audio.play();
+                audio.play()
+                    .catch(error => console.error("Error playing audio:", error));
             }
         }
 
         const handleClick = (event) => {
+            setActiveDrumPad(event.currentTarget.id);
             playAudio(event.currentTarget.innerText)
         }
 
         const handleKeydown = (event) => {
-            playAudio(event.key.toUpperCase())
+            const key = event.key.toUpperCase();
+            const parent = document.querySelector(`.drum-pad:has(> .clip#${key})`)
+            if(parent){
+                setActiveDrumPad(parent.id);
+                playAudio(key)
+            }
         }
 
         // Add event listeners to each drum pad
@@ -49,16 +58,17 @@ function Display() {
         };
     }, []);
     
-    
-
   return (
-    <div id='display'>
+    <div container>
+    <div id='display'>{ activeDrumPad.toUpperCase() }</div>
+    <div className='drum-pad-container'>
         {drumData.map(({ id, key, src, label }) => (
             <div className="drum-pad" id={id} key={id}>
                 <audio className="clip" id={key} src={src} type="audio/mp3"></audio>
                 {label}
             </div>
         ))}
+    </div>
     </div>
   );
 }
