@@ -33,10 +33,12 @@ function Display() {
 
         const handleKeydown = (event) => {
             const key = event.key.toUpperCase();
-            const parent = document.querySelector(`.drum-pad:has(> .clip#${key})`)
-            if(parent){
-                setActiveDrumPad(parent.id);
-                playAudio(key)
+            if(isNaN(key)){
+                const parent = document.querySelector(`.drum-pad:has(> #${key})`)
+                if(parent){
+                    setActiveDrumPad(parent.id);
+                    playAudio(key)
+                }
             }
         }
 
@@ -59,7 +61,7 @@ function Display() {
     }, []);
     
   return (
-    <div container>
+    <div className='container'>
     <div id='display'>{ activeDrumPad.toUpperCase() }</div>
     <div className='drum-pad-container'>
         {drumData.map(({ id, key, src, label }) => (
